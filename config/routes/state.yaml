@@ -1,0 +1,4 @@
+state-get:
+  path: /state
+  controller: App\Controller\StateController::getAaction
+  methods: ["GET"]

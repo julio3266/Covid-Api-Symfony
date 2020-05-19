@@ -1,0 +1,41 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <div class="row bg-dark">
+        {% for city, numeros in cities  %}
+            <div class="col-md-3">
+                <div class="card card-body mb-5 mt-3 text-light bg-dark">
+                    <h4 class="display-9 text-center ">
+                        {{ city }}
+                    </h4>
+                    <div class="text-center mt-2">
+                        <p>
+                            <strong>
+                                Confirmados:
+                            </strong>
+                            {{ numeros.Confirmado }}
+                        </p>
+                        <p>
+                            <strong>
+                                Recuperados:
+                            </strong>
+                            {{ numeros.Recuperado | default("-") }}
+                        </p>
+                        <p>
+                            <strong>
+                                Óbitos:
+                            </strong>
+                            {{ numeros.Óbito | default("-") }}
+                        </p>
+                        <p>
+                            <strong>
+                                Ultima Atualização:
+                            </strong>
+                            {{ numeros.date | date("d/m/Y H:i:s") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

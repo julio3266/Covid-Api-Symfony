@@ -1,0 +1,7 @@
+index-state:
+    path: /
+    controller: App\Controller\IndexController::indexAction
+
+index-city:
+    path: /cidades
+    controller: App\Controller\IndexController::cityAction

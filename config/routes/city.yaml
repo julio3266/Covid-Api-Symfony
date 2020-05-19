@@ -1,0 +1,4 @@
+city-get:
+  path: /city
+  controller: App\Controller\CityController::getAction
+  methods: ["GET"]
