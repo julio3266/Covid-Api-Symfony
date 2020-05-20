@@ -1,0 +1,14 @@
+.stateLink {
+    text-decoration: none;
+    color: #fff;
+}
+
+.stateLink:hover
+{
+    color: #fff;
+    text-decoration: underline;
+}
+
+.card-body {
+    border-color: #ffffff;
+}

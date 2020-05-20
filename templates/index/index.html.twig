@@ -1,7 +1,15 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-<div class="row bg-dark">
-    <h1>dados</h1>
-</div>
+    <div class="row bg-dark">
+        {% for state in states %}
+            <div class="col-md-3 mr-auto ml-auto">
+                <div class="card card-body mb-5 mt-3 text-light bg-dark text-center ">
+                    <a class="stateLink" href="{{ path("index-city", {uf: state.uf}) }}">
+                        {{ state.name }}
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

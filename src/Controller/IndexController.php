@@ -14,30 +14,43 @@ use Symfony\Component\HttpFoundation\Response;
 class IndexController extends AbstractController
 {
     private EntityManager $entityManager;
+
     private ObjectRepository $cityRepository;
     private ObjectRepository $stateRepository;
 
     public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->cityRepository = $entityManager->getRepository(City::class);
 
+        $this->cityRepository = $entityManager->getRepository(City::class);
         $this->stateRepository = $entityManager->getRepository(State::class);
     }
+
     public function indexAction(): Response
     {
         $states = $this->stateRepository->findAll();
-        $dados = [];
 
-        foreach ($states as $state) {
-            $dadps[$state->getName()] = $dados[$state->getName()] ?? [];
+
+        return $this->render("index/index.html.twig" , [
+            "states"=>$states
+        ]);
+    }
+
+
+    public function cityAction(string $uf): Response
+    {
+        $state = $this->stateRepository->findOneBy([
+            "uf"=>$uf
+        ]);
+
+        if (!$state) {
+            $this->addFlash("error", "Estado não encontrado");
+            return $this->redirectToRoute("index-state");
         }
 
-        return $this->render("index/index.html.twig");
-    }
-    public function cityAction(): Response
-    {
-        $cities = $this->cityRepository->findAll();
+        $cities = $this->cityRepository->findBy([
+            "state"=>$state
+        ]);
 
         $dados = [];
 

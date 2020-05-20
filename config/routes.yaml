@@ -3,5 +3,5 @@ index-state:
     controller: App\Controller\IndexController::indexAction
 
 index-city:
-    path: /cidades
+    path: /cidades/{uf}
     controller: App\Controller\IndexController::cityAction
