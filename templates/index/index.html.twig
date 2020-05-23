@@ -2,11 +2,11 @@
 
 {% block body %}
     <div class="row bg-dark">
-        {% for state in states %}
-            <div class="col-md-3 mr-auto ml-auto">
-                <div class="card card-body mb-5 mt-3 text-light bg-dark text-center ">
-                    <a class="stateLink" href="{{ path("index-city", {uf: state.uf}) }}">
-                        {{ state.name }}
+        {% for region in regions %}
+            <div class="col-md-3">
+                <div class="card text-center card-body mb-5 mt-3 text-light bg-dark">
+                    <a class="stateLink" href="{{ path("index-state") }}">
+                        {{ region.name }}
                     </a>
                 </div>
             </div>
