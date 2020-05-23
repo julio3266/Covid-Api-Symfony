@@ -8,6 +8,7 @@ namespace App\Command;
 use App\Entity\City;
 use App\Entity\State;
 use Doctrine\ORM\EntityManager;
+use http\Env\Response;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,6 +32,7 @@ class CovidCommand extends Command
         $output -> writeln("=== Updating covid...");
         $output -> writeln("====================================================");
         $this -> updateCE();
+        $this -> updateMA();
         return 0;
     }
 
@@ -58,4 +60,28 @@ class CovidCommand extends Command
             $this -> doctrine -> flush();
         }
     }
+
+    public function updateMA():void
+    {
+        $type =  "cases_c, deaths ";
+        $httpClient = HttpClient::create();
+        $response = $httpClient-> request("GET", "https://mapa-covid19.saude.ma.gov.br/data.php?type=ma&_=1590069094803");
+
+        $ma = $this->doctrine->getRepository(State::class) -> findOneBy(["uf"=>"ma"]);
+        foreach ($response->toArray() as $objeto) {
+            if(!isset($objeto["name"])) {
+                continue;
+            }
+            $city = new City();
+            $city -> setState($ma);
+            $city -> setName($objeto ["name"]);
+            $city -> setType("Óbito");
+            $city -> setQuantity((int) $objeto  ["deaths"]);
+            $city -> setDate(new \DateTime());
+            $this-> doctrine -> persist($city);
+            $this -> doctrine -> flush();
+        }
+
+    }
 }
+

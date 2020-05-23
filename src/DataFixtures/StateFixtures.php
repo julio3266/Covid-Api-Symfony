@@ -17,7 +17,12 @@ class StateFixtures extends Fixture
             new State("Ceará", "ce", "nordeste"),
             new State("Maranhão", "ma", "nordeste"),
             new State("Bahia", "ba", "nordeste"),
-
+            new State("Alagoas", "al", "nordeste"),
+            new State("Paraíba", "pb", "nordeste"),
+            new State("Pernambuco", "pe", "nordeste"),
+            new State("Piauí", "pi", "nordeste"),
+            new State("Rio Grande do Norte", "rn", "nordeste"),
+            new State("Sergipe","se", "nordeste"),
         ];
         foreach ($states as $state)
         {

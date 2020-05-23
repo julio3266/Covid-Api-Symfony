@@ -5,6 +5,7 @@ namespace App\Controller;
 
 
 use App\Entity\City;
+use App\Entity\Region;
 use App\Entity\State;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ObjectRepository;
@@ -17,6 +18,7 @@ class IndexController extends AbstractController
 
     private ObjectRepository $cityRepository;
     private ObjectRepository $stateRepository;
+    private ObjectRepository $regionRepository;
 
     public function __construct(EntityManager $entityManager)
     {
@@ -24,18 +26,28 @@ class IndexController extends AbstractController
 
         $this->cityRepository = $entityManager->getRepository(City::class);
         $this->stateRepository = $entityManager->getRepository(State::class);
+        $this->regionRepository = $entityManager->getRepository(Region::class);
     }
 
     public function indexAction(): Response
     {
-        $states = $this->stateRepository->findAll();
+        $regions = $this->regionRepository->findAll();
 
 
         return $this->render("index/index.html.twig" , [
-            "states"=>$states
+            "regions"=>$regions
         ]);
     }
 
+    public function stateAction(): Response
+    {
+        $states = $this->stateRepository->findAll();
+
+
+        return $this->render("index/state.html.twig" , [
+            "states"=>$states
+        ]);
+    }
 
     public function cityAction(string $uf): Response
     {

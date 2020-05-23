@@ -1,6 +1,10 @@
-index-state:
+index-region:
     path: /
     controller: App\Controller\IndexController::indexAction
+
+index-state:
+    path: /estados
+    controller: App\Controller\IndexController::stateAction
 
 index-city:
     path: /cidades/{uf}
