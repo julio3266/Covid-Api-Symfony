@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * @Entity()
@@ -32,11 +34,12 @@ class State
     public string $uf;
 
     /**
-     * @Column()
+     * @ManyToOne(targetEntity="Region")
+     * @JoinColumn(name="region_id", referencedColumnName="id")
      */
-    public string $region;
+    public Region $region;
 
-    public function __construct(string $name, string $uf, string $region)
+    public function __construct(string $name, string $uf, Region $region)
     {
         $this->name = $name;
         $this->region = $region;
@@ -73,11 +76,11 @@ class State
     }
 
 
-    public function getRegion(): string
+    public function getRegion(): Region
     {
         return $this->region;
     }
-    public function setRegion(string $region): void
+    public function setRegion(Region $region): void
     {
         $this->region = $region;
     }

@@ -3,7 +3,7 @@ index-region:
     controller: App\Controller\IndexController::indexAction
 
 index-state:
-    path: /estados
+    path: /{region}/estados
     controller: App\Controller\IndexController::stateAction
 
 index-city:

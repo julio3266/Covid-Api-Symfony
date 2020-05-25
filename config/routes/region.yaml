@@ -1,0 +1,4 @@
+region-get:
+  path: /region
+  controller: App\Controller\RegionController::getAction
+  methods: ["GET"]

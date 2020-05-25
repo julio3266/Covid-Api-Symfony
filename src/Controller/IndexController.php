@@ -39,10 +39,20 @@ class IndexController extends AbstractController
         ]);
     }
 
-    public function stateAction(): Response
+    public function stateAction(string $region): Response
     {
-        $states = $this->stateRepository->findAll();
+        $region = $this->regionRepository->findOneBy([
+            "name"=>$region
+        ]);
 
+        $states = $this->stateRepository->findBy([
+            "region"=>$region
+        ]);
+
+        if(!$states){
+            $this->addFlash("error", "Dados inexistentes para a região selecionada");
+            return $this->redirectToRoute("index-region");
+        }
 
         return $this->render("index/state.html.twig" , [
             "states"=>$states

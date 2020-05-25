@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}Covid-19 App{% endblock %}</title>
     {% block stylesheets %}{% endblock %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/style.css">
@@ -15,7 +15,11 @@
         <h1>{{ error }}</h1>
     </div>
 {% endfor %}
+
 {% block body %}{% endblock %}
+{% include"partials/footer.html.twig" %}
 {% block javascripts %}{% endblock %}
+
 </body>
+
 </html>

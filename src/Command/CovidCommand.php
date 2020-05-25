@@ -33,6 +33,7 @@ class CovidCommand extends Command
         $output -> writeln("====================================================");
         $this -> updateCE();
         $this -> updateMA();
+        $this-> updateBA();;
         return 0;
     }
 
@@ -79,9 +80,54 @@ class CovidCommand extends Command
             $city -> setQuantity((int) $objeto  ["deaths"]);
             $city -> setDate(new \DateTime());
             $this-> doctrine -> persist($city);
+
+            $city = new City();
+            $city -> setState($ma);
+            $city -> setName($objeto ["name"]);
+            $city -> setType("Confirmado");
+            $city -> setQuantity((int) $objeto  ["cases_c"]);
+            $city -> setDate(new \DateTime());
+            $this-> doctrine -> persist($city);
+
             $this -> doctrine -> flush();
         }
+    }
+    public function updateBA():void
+    {
 
+        $httpClient = HttpClient::create();
+        $response = $httpClient->request(
+            "POST",
+            "https://infovis.sei.ba.gov.br/covid19/session/80706ff8ad431f3e4ff655a4fc0aa4f0/dataobj/TabPorCidade?w=&nonce=8053573957c43f1d",
+            [
+                "body"=>["text"=>"draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&search%5BcaseInsensitive%5D=true&search%5Bsmart%5D=true&escape=false"]
+            ]
+        );
+        $ba = $this->doctrine->getRepository(State::class)->findOneBy(["uf" => "ba"]);
+        foreach ($response->toArray()["data"] as $objeto) {
+            if (!isset($objeto[0])) {
+                continue;
+            }
+
+
+            $city = new City();
+            $city->setState($ba);
+            $city->setName($objeto [0]);
+            $city->setType("Óbito");
+            $city->setQuantity((int)$objeto  [3]);
+            $city->setDate(new \DateTime());
+            $this->doctrine->persist($city);
+
+            $city = new City();
+            $city->setState($ba);
+            $city->setName($objeto [0]);
+            $city->setType("Confirmado");
+            $city->setQuantity((int)$objeto  [1]);
+            $city->setDate(new \DateTime());
+            $this->doctrine->persist($city);
+
+            $this->doctrine->flush();
+        }
     }
 }
 
