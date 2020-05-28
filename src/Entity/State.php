@@ -39,11 +39,23 @@ class State
      */
     public Region $region;
 
+
+    /**
+     * @Column(type="integer")
+     */
+    public int $quantityDeaths;
+
+    /**
+     * @Column(type="integer")
+     */
+    public int $quantityConfirmed;
+
     public function __construct(string $name, string $uf, Region $region)
     {
         $this->name = $name;
         $this->region = $region;
         $this->uf = $uf;
+
     }
 
     public function getId(): int
@@ -85,4 +97,23 @@ class State
         $this->region = $region;
     }
 
+    public function getQuantityDeaths(): int
+    {
+        return $this->quantityDeaths;
+    }
+
+    public function setQuantityDeaths(int $quantityDeaths): void
+    {
+        $this->quantityDeaths = $quantityDeaths;
+    }
+
+
+    public function getQuantityConfirmed(): int
+    {
+        return $this->quantityConfirmed;
+    }
+    public function setQuantityConfirmed(int $quantityConfirmed): void
+    {
+        $this->quantityConfirmed = $quantityConfirmed;
+    }
 }

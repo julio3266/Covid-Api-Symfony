@@ -74,16 +74,9 @@ class IndexController extends AbstractController
             "state"=>$state
         ]);
 
-        $dados = [];
-
-        foreach ($cities as $city) {
-            $dados[$city->getName()] = $dados[$city->getName()] ?? [];
-            $dados[$city->getName()] [$city->getType()] = $city->getQuantity();
-            $dados[$city->getName()] ["date"] = $city->getDate();
-        }
 
         return $this->render("index/city.html.twig", [
-            "cities"=>$dados
+            "cities"=>$cities
         ]);
     }
 }

@@ -6,6 +6,7 @@ namespace App\Command;
 
 
 use App\Entity\City;
+use App\Entity\Region;
 use App\Entity\State;
 use Doctrine\ORM\EntityManager;
 use http\Env\Response;
@@ -31,9 +32,10 @@ class CovidCommand extends Command
         $output -> writeln("====================================================");
         $output -> writeln("=== Updating covid...");
         $output -> writeln("====================================================");
-        $this -> updateCE();
-        $this -> updateMA();
-        $this-> updateBA();;
+
+        $this->updateRegion();
+        $this->updateState();
+        $this->updateCity();
         return 0;
     }
 
@@ -42,92 +44,98 @@ class CovidCommand extends Command
         $this -> setDescription("This command update data covid");
     }
 
-    public function updateCE():void
+    public function updateRegion():void
     {
-        $today = date("Y-m-d");
-        $type = "Confirmado,Óbito,Recuperado";
+        $url = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalSintese";
         $httpClient = HttpClient::create();
-        $response = $httpClient -> request("GET", "https://indicadores.integrasus.saude.ce.gov.br/api/coronavirus/qtd-por-municipio?data={$today}&tipo={$type}&idMunicipio=&idRegiaoSaude=&idMacrorregiao=");
+        $response = $httpClient -> request("GET", $url);
 
-        $ce = $this -> doctrine -> getRepository(State::class) -> findOneBy(["uf" => "ce"]);
-        foreach($response -> toArray() as $objeto) {
-            $city = new City();
-            $city -> setState($ce);
-            $city -> setName($objeto  ["municipio"]);
-            $city -> setQuantity($objeto  ["quantidade"]??0);
-            $city -> setDate(new \DateTime());
-            $city -> setType($objeto ["tipo"]);
-            $this -> doctrine -> persist($city);
-            $this -> doctrine -> flush();
-        }
-    }
+        foreach ($response -> toArray() as $objeto) {
+            $region = new Region(
+                $objeto ["regiao"] ?? $objeto ["_id"],
+                (int) $objeto ["casosAcumulado"],
+                (int) $objeto ["obitosAcumulado"]
+            );
 
-    public function updateMA():void
-    {
-        $type =  "cases_c, deaths ";
-        $httpClient = HttpClient::create();
-        $response = $httpClient-> request("GET", "https://mapa-covid19.saude.ma.gov.br/data.php?type=ma&_=1590069094803");
-
-        $ma = $this->doctrine->getRepository(State::class) -> findOneBy(["uf"=>"ma"]);
-        foreach ($response->toArray() as $objeto) {
-            if(!isset($objeto["name"])) {
-                continue;
-            }
-            $city = new City();
-            $city -> setState($ma);
-            $city -> setName($objeto ["name"]);
-            $city -> setType("Óbito");
-            $city -> setQuantity((int) $objeto  ["deaths"]);
-            $city -> setDate(new \DateTime());
-            $this-> doctrine -> persist($city);
-
-            $city = new City();
-            $city -> setState($ma);
-            $city -> setName($objeto ["name"]);
-            $city -> setType("Confirmado");
-            $city -> setQuantity((int) $objeto  ["cases_c"]);
-            $city -> setDate(new \DateTime());
-            $this-> doctrine -> persist($city);
-
-            $this -> doctrine -> flush();
-        }
-    }
-    public function updateBA():void
-    {
-
-        $httpClient = HttpClient::create();
-        $response = $httpClient->request(
-            "POST",
-            "https://infovis.sei.ba.gov.br/covid19/session/3df48749387898f317eb4b76a0a945ac/dataobj/TabPorCidade?w=&nonce=c00415f82201850f",
-            [
-                "body"=>["text"=>"draw=1&columns%5B0%5D%5Bdata%5D=0&columns%5B0%5D%5Bname%5D=&columns%5B0%5D%5Bsearchable%5D=true&columns%5B0%5D%5Borderable%5D=true&columns%5B0%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B0%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B1%5D%5Bdata%5D=1&columns%5B1%5D%5Bname%5D=&columns%5B1%5D%5Bsearchable%5D=true&columns%5B1%5D%5Borderable%5D=true&columns%5B1%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B1%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B2%5D%5Bdata%5D=2&columns%5B2%5D%5Bname%5D=&columns%5B2%5D%5Bsearchable%5D=true&columns%5B2%5D%5Borderable%5D=true&columns%5B2%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B2%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B3%5D%5Bdata%5D=3&columns%5B3%5D%5Bname%5D=&columns%5B3%5D%5Bsearchable%5D=true&columns%5B3%5D%5Borderable%5D=true&columns%5B3%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B3%5D%5Bsearch%5D%5Bregex%5D=false&columns%5B4%5D%5Bdata%5D=4&columns%5B4%5D%5Bname%5D=&columns%5B4%5D%5Bsearchable%5D=true&columns%5B4%5D%5Borderable%5D=true&columns%5B4%5D%5Bsearch%5D%5Bvalue%5D=&columns%5B4%5D%5Bsearch%5D%5Bregex%5D=false&start=0&length=-1&search%5Bvalue%5D=&search%5Bregex%5D=false&search%5BcaseInsensitive%5D=true&search%5Bsmart%5D=true&escape=false"]
-            ]
-        );
-        $ba = $this->doctrine->getRepository(State::class)->findOneBy(["uf" => "ba"]);
-        foreach ($response->toArray()["data"] as $objeto) {
-            if (!isset($objeto[0])) {
-                continue;
-            }
-
-
-            $city = new City();
-            $city->setState($ba);
-            $city->setName($objeto [0]);
-            $city->setType("Óbito");
-            $city->setQuantity((int)$objeto  [3]);
-            $city->setDate(new \DateTime());
-            $this->doctrine->persist($city);
-
-            $city = new City();
-            $city->setState($ba);
-            $city->setName($objeto [0]);
-            $city->setType("Confirmado");
-            $city->setQuantity((int)$objeto  [1]);
-            $city->setDate(new \DateTime());
-            $this->doctrine->persist($city);
-
+            $this->doctrine->persist($region);
             $this->doctrine->flush();
         }
     }
+
+    public function updateState()
+    {
+        $states = [
+
+            "AC"=> ["nome"=>"Acre", "regiao"=> "Norte"],
+            "AL"=> ["nome"=>"Alagoas", "regiao"=> "Nordeste"],
+            "AP"=> ["nome"=>"Amapá", "regiao"=> "Norte"],
+            "AM"=> ["nome"=>"Amazonas", "regiao"=> "Norte"],
+            "BA"=> ["nome"=>"Bahia", "regiao"=> "Nordeste"],
+            "CE"=> ["nome"=>"Ceará", "regiao"=> "Nordeste"],
+            "DF"=> ["nome"=>"Distrito Federal", "regiao"=> "Centro-Oeste"],
+            "ES"=> ["nome"=>"Espírito Santo", "regiao"=> "Sudeste"],
+            "GO"=> ["nome"=>"Goiás", "regiao"=> "Centro-Oeste"],
+            "MA"=> ["nome"=>"Maranhão", "regiao"=> "Nordeste"],
+            "MT"=> ["nome"=>"Mato Grosso", "regiao"=> "Centro-Oeste"],
+            "MS"=> ["nome"=>"Mato Grosso do Sul", "regiao"=> "Centro-Oeste"],
+            "MG"=> ["nome"=>"Minas Gerais", "regiao"=> "Sudeste"],
+            "PA"=> ["nome"=>"Pará", "regiao"=> "Norte"],
+            "PB"=> ["nome"=>"Paraíba", "regiao"=> "Nordeste"],
+            "PR"=> ["nome"=>"Paraná", "regiao"=> "Sul"],
+            "PE"=> ["nome"=>"Pernambuco", "regiao"=> "Nordeste"],
+            "PI"=> ["nome"=>"Piauí", "regiao"=> "Nordeste"],
+            "RJ"=> ["nome"=>"Rio de Janeiro", "regiao"=> "Sudeste"],
+            "RN"=> ["nome"=>"Rio Grande do Norte", "regiao"=> "Nordeste"],
+            "RS"=> ["nome"=>"Rio Grande do Sul", "regiao"=> "Sul"],
+            "RO"=> ["nome"=>"Rondônia", "regiao"=> "Norte"],
+            "RR"=> ["nome"=>"Roraima", "regiao"=> "Norte"],
+            "SC"=> ["nome"=>"Santa Catarina", "regiao"=> "Sul"],
+            "SP"=> ["nome"=>"São Paulo", "regiao"=> "Sudeste"],
+            "SE"=> ["nome"=>"Sergipe", "regiao"=> "Nordeste"],
+            "TO"=> ["nome"=>"Tocantins", "regiao"=> "Norte"]
+        ];
+        $url = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalEstado";
+
+        $httpClient = HttpClient::create();
+        $response = $httpClient->request("GET", $url);
+
+        foreach ($response->toArray() as $objeto){
+            $uf = $objeto["nome"];
+            $regionName = $states [$uf]["regiao"];
+            $stateName = $states[$uf]["nome"];
+            $region = $this->doctrine->getRepository(Region::class)->findOneBy(["name"=>$regionName]);
+
+            $state = new State($stateName, $uf, $region );
+            $state->setQuantityConfirmed($objeto["casosAcumulado"]);
+            $state->setQuantityDeaths($objeto["obitosAcumulado"]);
+
+            $this->doctrine->persist($state);
+            $this->doctrine->flush();
+        }
+
+    }
+
+    public function updateCity(){
+        $urlCidade = "https://covid.saude.gov.br/assets/data/municipios.json";
+        $url = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio";
+        $urlIbge = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios/";
+        $httpClient = HttpClient::create();
+        $response = $httpClient->request("GET", $url);
+
+        $cities = [];
+        $i = 0;
+        $state = $this->doctrine->getRepository(State::class)->findOneBy(["uf"=>"CE"]);
+        foreach ($response ->toArray() as $objeto) {
+            $city = new City($objeto["nome"], $state);
+            $city-> setQuantityConfirmed($objeto["casosAcumulado"]);
+            $city-> setQuantityDeaths($objeto["obitosAcumulado"]);
+            $city-> setDate(new \DateTime());
+
+            $this->doctrine->persist($city);
+            $this->doctrine->flush();
+        }
+
+    }
+
 }
 

@@ -5,9 +5,15 @@
         {% for region in regions %}
             <div class="col-md-3">
                 <div class="card text-center card-body mb-5 mt-3 text-light bg-dark">
-                    <a class="stateLink" href="{{ path("index-state", {region: region.name}) }}">
+                    <a class="stateLink h3" href="{{ path("index-state", {region: region.name}) }}">
                         {{ region.name }}
                     </a>
+                    <p class="mt-3">
+                        <strong>Confirmados:</strong> {{ region.quantityConfirmed }}
+                    </p>
+                    <p class="mt-2">
+                        <strong>óbitos:</strong> {{ region.quantityDeaths }}
+                    </p>
                 </div>
             </div>
         {% endfor %}

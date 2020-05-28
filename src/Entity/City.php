@@ -40,27 +40,26 @@ class City
      * @Column(type="datetime")
      */
     public \DateTime $date;
-    /**
-     * @Column()
-     */
-    public string $type;
+
 
     /**
      * @Column(type="integer")
      */
-    public int $quantity;
+    public int $quantityConfirmed;
 
 
-    public function getQuantity(): int
+    /**
+     * @Column(type="integer")
+     */
+    public int $quantityDeaths;
+
+
+    public function __construct(string $name, State $state)
     {
-        return $this->quantity;
+        $this-> name = $name;
+        $this-> state = $state;
     }
 
-
-    public function setQuantity(int $quantity): void
-    {
-        $this->quantity = $quantity;
-    }
 
     public function getId(): int
     {
@@ -100,13 +99,22 @@ class City
         $this->date = $date;
     }
 
+    public function getQuantityConfirmed(): int
+    {
+        return $this->quantityConfirmed;
+    }
+    public function setQuantityConfirmed(int $quantityConfirmed): void
+    {
+        $this->quantityConfirmed = $quantityConfirmed;
+    }
 
-    public function getType(): string
+    public function getQuantityDeaths(): int
     {
-        return $this->type;
+        return $this->quantityDeaths;
     }
-    public function setType(string $type): void
+    public function setQuantityDeaths(int $quantityDeaths): void
     {
-        $this->type = $type;
+        $this->quantityDeaths = $quantityDeaths;
     }
+
 }
