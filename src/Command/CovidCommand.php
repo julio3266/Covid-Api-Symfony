@@ -32,7 +32,6 @@ class CovidCommand extends Command
         $output -> writeln("====================================================");
         $output -> writeln("=== Updating covid...");
         $output -> writeln("====================================================");
-
         $this->updateRegion();
         $this->updateState();
         $this->updateCity();
@@ -116,23 +115,33 @@ class CovidCommand extends Command
     }
 
     public function updateCity(){
-        $urlCidade = "https://covid.saude.gov.br/assets/data/municipios.json";
-        $url = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio";
-        $urlIbge = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios/";
+        $urlAllCities = "https://servicodados.ibge.gov.br/api/v1/localidades/municipios";
+        $urlCitiesCovid = "https://xx9p7hp1p7.execute-api.us-east-1.amazonaws.com/prod/PortalMunicipio";
         $httpClient = HttpClient::create();
-        $response = $httpClient->request("GET", $url);
+        $allCitiesResponse = $httpClient->request("GET", $urlAllCities);
+        $allCities = [];
 
-        $cities = [];
-        $i = 0;
-        $state = $this->doctrine->getRepository(State::class)->findOneBy(["uf"=>"CE"]);
-        foreach ($response ->toArray() as $objeto) {
+        foreach ($allCitiesResponse->toArray() as $city) {
+            $ibgeCode = substr((string) $city["id"], 0, 6);
+            $allCities[$ibgeCode] = [
+                "name"=>$city["nome"],
+                "state"=>$city["microrregiao"]["mesorregiao"]["UF"]["sigla"],
+            ];
+        }
+
+        $allCitiesCovidResponse = $httpClient->request("GET", $urlCitiesCovid);
+        foreach ($allCitiesCovidResponse ->toArray() as $objeto) {
+            $cityIbge = $allCities[$objeto["cod"]];
+            $state = $this->doctrine->getRepository(State::class)->findOneBy(["uf"=>$cityIbge["state"]]);
+
             $city = new City($objeto["nome"], $state);
             $city-> setQuantityConfirmed($objeto["casosAcumulado"]);
             $city-> setQuantityDeaths($objeto["obitosAcumulado"]);
             $city-> setDate(new \DateTime());
-
             $this->doctrine->persist($city);
             $this->doctrine->flush();
+
+
         }
 
     }
