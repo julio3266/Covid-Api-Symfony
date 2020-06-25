@@ -1,6 +1,11 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+    <div class="row">
+        <div class="col-md-6 mr-5 mb-3">
+            <canvas id="myChartState"></canvas>
+        </div>
+    </div>
     <div class="row bg-dark">
         {% for state in states %}
             <div class="col-md-3 mr-auto ml-auto">
@@ -23,4 +28,56 @@
             </div>
         {% endfor %}
     </div>
+    <div class="modal fade" id="chartState" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+{% block javascripts %}
+    <script>
+        var config = {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [
+                        {{ states[0].quantityConfirmed }} ,
+                        {{ states[0].quantityDeaths }}
+                    ],
+                    backgroundColor: [
+                        '#ED193F',
+                        '#4C69F1',
+                    ],
+                    label: 'Dataset 1'
+                }],
+                labels: [
+                    'confirmados',
+                    'óbitos',
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('myChartState').getContext('2d');
+            window.myPie = new Chart(ctx, config);
+        };
+    </script>
+{% endblock %}
+

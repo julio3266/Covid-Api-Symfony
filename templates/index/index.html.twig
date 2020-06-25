@@ -1,6 +1,16 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
+    <div class="row mr-5 mb-5 ">
+        <div class="col-md-6">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="col-md-6 ">
+            <canvas id="myChartBar"></canvas>
+        </div>
+    </div>
+
+
     <div class="row bg-dark">
         {% for region in regions %}
             <div class="col-md-3">
@@ -8,6 +18,7 @@
                     <a class="stateLink h3" href="{{ path("index-state", {region: region.name}) }}">
                         {{ region.name }}
                     </a>
+
                     <p class="mt-3">
                         <strong>Confirmados:</strong> {{ region.quantityConfirmed }}
                     </p>
@@ -18,4 +29,110 @@
             </div>
         {% endfor %}
     </div>
+    <div class="modal fade" id="chartRegion" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
+{% block javascripts %}
+    <script>
+        var config = {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: [
+                        {{ regions[0].quantityConfirmed }} ,
+                        {{ regions[0].quantityDeaths }}
+                    ],
+                    backgroundColor: [
+                        '#ED193F',
+                        '#4C69F1',
+                    ],
+                    label: 'Dataset 1'
+                }],
+                labels: [
+                    'confirmados',
+                    'óbitos',
+                ]
+            },
+            options: {
+                responsive: true
+            }
+        };
+
+
+
+
+        var regions = ["{{ regions[1].name }}"," {{ regions[2].name }}", "{{ regions[3].name }}", "{{ regions[4].name }}", "{{ regions[5].name }}"];
+        var color = '#4C69F1';
+        var barChartData = {
+            labels: regions,
+            datasets: [{
+                label: 'Confirmados',
+                backgroundColor: '#ED193F',
+                borderWidth: 1,
+                data: [
+                    {{ regions[1].quantityConfirmed }},
+                    {{ regions[2].quantityConfirmed }},
+                    {{ regions[3].quantityConfirmed }},
+                    {{ regions[4].quantityConfirmed }},
+                    {{ regions[5].quantityConfirmed }},
+                ]
+            }, {
+                label: 'Óbitos',
+                backgroundColor: '#4C69F1',
+                borderWidth: 1,
+                data: [
+                    {{ regions[1].quantityDeaths }},
+                    {{ regions[2].quantityDeaths }},
+                    {{ regions[3].quantityDeaths }},
+                    {{ regions[4].quantityDeaths }},
+                    {{ regions[5].quantityDeaths }},
+
+                ]
+            }]
+
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById('myChart').getContext('2d');
+            window.myPie = new Chart(ctx, config);
+
+
+            var ctx = document.getElementById('myChartBar').getContext('2d');
+            window.myBar = new Chart(ctx, {
+                type: 'bar',
+                data: barChartData,
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Chart.js Bar Chart'
+                    }
+                }
+            });
+
+        };
+
+    </script>
+{% endblock %}
+
