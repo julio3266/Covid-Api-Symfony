@@ -11,7 +11,7 @@
     </div>
     <div class="row bg-dark">
         {% for region in regions %}
-            <div class="col-md-3">
+            <div class="col-md-12 col-sm-12 col-lg-4">
                 <div class="card text-center card-body mb-5 mt-3 text-light bg-dark">
                     <a class="stateLink h3" href="{{ path("index-state", {region: region.name}) }}">
                         {{ region.name }}
