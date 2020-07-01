@@ -5,6 +5,9 @@
         <div class="col-md-6 mr-5 mb-3">
             <canvas id="myChartState"></canvas>
         </div>
+        <div class="col-md-6 ">
+            <canvas id="myChartBar"></canvas>
+        </div>
     </div>
     <div class="row bg-dark">
         {% for state in states %}
@@ -78,6 +81,8 @@
             var ctx = document.getElementById('myChartState').getContext('2d');
             window.myPie = new Chart(ctx, config);
         };
+
+
     </script>
 {% endblock %}
 
