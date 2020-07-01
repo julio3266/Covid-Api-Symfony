@@ -32,6 +32,11 @@ class Region
     public int $quantityDeaths;
 
     /**
+     * @Column(type="datetime")
+     */
+    public \DateTime $date;
+
+    /**
      * @Column(type="integer")
      */
     public int $quantityConfirmed;
@@ -66,6 +71,14 @@ class Region
         $this->quantityConfirmed = $quantityConfirmed;
     }
 
+    public function getDate(): \DateTime
+    {
+        return $this->date;
+    }
+    public function setDate(\DateTime $date): void
+    {
+        $this->date = $date;
+    }
 
     public function getId(): int
     {

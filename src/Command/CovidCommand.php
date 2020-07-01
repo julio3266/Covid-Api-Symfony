@@ -55,7 +55,7 @@ class CovidCommand extends Command
                 (int) $objeto ["casosAcumulado"],
                 (int) $objeto ["obitosAcumulado"]
             );
-
+            $region->setDate(new \DateTime());
             $this->doctrine->persist($region);
             $this->doctrine->flush();
         }
@@ -64,7 +64,6 @@ class CovidCommand extends Command
     public function updateState()
     {
         $states = [
-
             "AC"=> ["nome"=>"Acre", "regiao"=> "Norte"],
             "AL"=> ["nome"=>"Alagoas", "regiao"=> "Nordeste"],
             "AP"=> ["nome"=>"Amapá", "regiao"=> "Norte"],
@@ -105,6 +104,7 @@ class CovidCommand extends Command
             $region = $this->doctrine->getRepository(Region::class)->findOneBy(["name"=>$regionName]);
 
             $state = new State($stateName, $uf, $region );
+            $state->setDate(new \DateTime());
             $state->setQuantityConfirmed($objeto["casosAcumulado"]);
             $state->setQuantityDeaths($objeto["obitosAcumulado"]);
 

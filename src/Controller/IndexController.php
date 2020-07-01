@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\City;
 use App\Entity\Region;
 use App\Entity\State;
+use Cassandra\Date;
 use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +32,15 @@ class IndexController extends AbstractController
 
     public function indexAction(): Response
     {
-        $regions = $this->regionRepository->findAll();
+        $yesterday = (new \DateTime())->modify("-1 day");
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select("region")
+            ->from(Region::class, "region")
+            ->where("region.date between :de and :ate")
+            ->setParameter("de", $yesterday->format("Y-m-d 00:00:00"))
+            ->setParameter("ate", $yesterday->format("Y-m-d 23:59:59"));
+        $regions = $qb->getQuery()->getResult();
 
 
         return $this->render("index/index.html.twig" , [
@@ -41,13 +50,20 @@ class IndexController extends AbstractController
 
     public function stateAction(string $region): Response
     {
-        $region = $this->regionRepository->findOneBy([
-            "name"=>$region
-        ]);
 
-        $states = $this->stateRepository->findBy([
-            "region"=>$region
-        ]);
+
+        $yesterday = (new \DateTime())->modify("-1 day");
+        $qb = $this->entityManager->createQueryBuilder();
+        $qb
+            ->select("state")
+            ->from(State::class, "state")
+            ->where("state.region =:region and state.date between :de and :ate")
+                ->setParameter("region", $region)
+            ->setParameter("de", $yesterday->format("Y-m-d 00:00:00"))
+            ->setParameter("ate", $yesterday->format("Y-m-d 23:59:59"));
+
+        $states = $qb->getQuery()->getResult();
+
 
         if(!$states){
             $this->addFlash("error", "Dados inexistentes para a região selecionada");
@@ -61,9 +77,8 @@ class IndexController extends AbstractController
 
     public function cityAction(string $uf): Response
     {
-        $state = $this->stateRepository->findOneBy([
-            "uf"=>$uf
-        ]);
+
+        $state = $this->stateRepository->find($uf);
 
         if (!$state) {
             $this->addFlash("error", "Estado não encontrado");

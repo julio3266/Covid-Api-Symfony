@@ -34,6 +34,11 @@ class State
     public string $uf;
 
     /**
+     * @Column(type="datetime")
+     */
+    public \DateTime $date;
+
+    /**
      * @ManyToOne(targetEntity="Region")
      * @JoinColumn(name="region_id", referencedColumnName="id")
      */
@@ -67,6 +72,14 @@ class State
         $this->id = $id;
     }
 
+    public function getDate(): \DateTime
+    {
+        return $this->date;
+    }
+    public function setDate(\DateTime $date): void
+    {
+        $this->date = $date;
+    }
 
     public function getName(): string
     {
