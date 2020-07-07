@@ -101,9 +101,9 @@ class CovidCommand extends Command
             $uf = $objeto["nome"];
             $regionName = $states [$uf]["regiao"];
             $stateName = $states[$uf]["nome"];
-            $region = $this->doctrine->getRepository(Region::class)->findOneBy(["name"=>$regionName]);
+            $regions = $this->doctrine->getRepository(Region::class)->findBy(["name"=>$regionName]);
 
-            $state = new State($stateName, $uf, $region );
+            $state = new State($stateName, $uf, end($regions) );
             $state->setDate(new \DateTime());
             $state->setQuantityConfirmed($objeto["casosAcumulado"]);
             $state->setQuantityDeaths($objeto["obitosAcumulado"]);
@@ -132,9 +132,9 @@ class CovidCommand extends Command
         $allCitiesCovidResponse = $httpClient->request("GET", $urlCitiesCovid);
         foreach ($allCitiesCovidResponse ->toArray() as $objeto) {
             $cityIbge = $allCities[$objeto["cod"]];
-            $state = $this->doctrine->getRepository(State::class)->findOneBy(["uf"=>$cityIbge["state"]]);
+            $state = $this->doctrine->getRepository(State::class)->findBy(["uf"=>$cityIbge["state"]]);
 
-            $city = new City($objeto["nome"], $state);
+            $city = new City($objeto["nome"], end($state));
             $city-> setQuantityConfirmed($objeto["casosAcumulado"]);
             $city-> setQuantityDeaths($objeto["obitosAcumulado"]);
             $city-> setDate(new \DateTime());

@@ -1,7 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block body %}
-    <div class="row mr-5 mb-5 ">
+    <div class="row mr-5 ">
+        <div class="col-md-12">
+            <canvas id="chartTimeLine"></canvas>
+        </div>
+    </div>
+    <div class="row mr-5  ">
         <div class="col-md-6">
             <canvas id="myChart"></canvas>
         </div>
@@ -49,89 +54,8 @@
 
 {% endblock %}
 {% block javascripts %}
-    <script>
-        var config = {
-            type: 'pie',
-            data: {
-                datasets: [{
-                    data: [
-                        {{ regions[0].quantityConfirmed }} ,
-                        {{ regions[0].quantityDeaths }}
-                    ],
-                    backgroundColor: [
-                        '#ED193F',
-                        '#4C69F1',
-                    ],
-                    label: 'Dataset 1'
-                }],
-                labels: [
-                    'confirmados',
-                    'óbitos',
-                ]
-            },
-            options: {
-                responsive: true
-            }
-        };
+    {{  include ("index/Charts/quantityToday.html.twig") }}
+    {{  include ("index/Charts/quantityEveryday.html.twig") }}
 
-
-
-
-        var regions = ["{{ regions[1].name }}"," {{ regions[2].name }}", "{{ regions[3].name }}", "{{ regions[4].name }}", "{{ regions[5].name }}"];
-        var color = '#4C69F1';
-        var barChartData = {
-            labels: regions,
-            datasets: [{
-                label: 'Confirmados',
-                backgroundColor: '#ED193F',
-                borderWidth: 1,
-                data: [
-                    {{ regions[1].quantityConfirmed }},
-                    {{ regions[2].quantityConfirmed }},
-                    {{ regions[3].quantityConfirmed }},
-                    {{ regions[4].quantityConfirmed }},
-                    {{ regions[5].quantityConfirmed }},
-                ]
-            }, {
-                label: 'Óbitos',
-                backgroundColor: '#4C69F1',
-                borderWidth: 1,
-                data: [
-                    {{ regions[1].quantityDeaths }},
-                    {{ regions[2].quantityDeaths }},
-                    {{ regions[3].quantityDeaths }},
-                    {{ regions[4].quantityDeaths }},
-                    {{ regions[5].quantityDeaths }},
-
-                ]
-            }]
-
-        };
-
-        window.onload = function() {
-            var ctx = document.getElementById('myChart').getContext('2d');
-            window.myPie = new Chart(ctx, config);
-
-
-            var ctx = document.getElementById('myChartBar').getContext('2d');
-            window.myBar = new Chart(ctx, {
-                type: 'bar',
-                data: barChartData,
-                options: {
-                    responsive: true,
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Comparação entre regiões'
-                    }
-                }
-            });
-
-
-        };
-
-    </script>
 {% endblock %}
 

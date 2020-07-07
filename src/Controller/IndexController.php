@@ -43,8 +43,32 @@ class IndexController extends AbstractController
         $regions = $qb->getQuery()->getResult();
 
 
+        $allRegions = $this->regionRepository->findAll();
+
+        $regionsTimeLine = [];
+        /** @var  Region $region */
+        foreach($allRegions as $region) {
+            $name = $region->getName();
+            $regionsTimeLine[$name] = $regionsTimeLine[$name] ?? [];
+//            array_push($regionsTimeLine[$name], [
+//                "deaths"=>$region->getQuantityDeaths(),
+//                "cases"=>$region->getQuantityConfirmed(),
+//                "name"=>$region->getName()
+//            ]);
+             array_push($regionsTimeLine[$name], $region->getQuantityDeaths());
+
+        }
+//        var_dump($regionsTimeLine);
+//        die();
+
+        $allRegionsName = array_map(fn(Region $region) =>   $region->getName(), $allRegions);
+        $allDays = array_map(fn(Region $region) =>   $region->getDate()->format('d-m-Y'), $allRegions);
+
         return $this->render("index/index.html.twig" , [
-            "regions"=>$regions
+            "regions"=>$regions,
+            "regionsName"=>$allRegionsName,
+            "regionsTimeLine"=>$regionsTimeLine,
+            "allDays"=>array_unique($allDays)
         ]);
     }
 
