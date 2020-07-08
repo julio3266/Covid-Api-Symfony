@@ -8,19 +8,20 @@
         days.push("{{ day }}")
     {% endfor %}
 
-    {% for  key, data in regionsTimeLine %}
+    {% for  key, data in regionsTimeLineConfirmed %}
     values.push({
         label: "{{ key }}",
-        backgroundColor: "blue",
+        backgroundColor: colors[i],
         borderColor: colors[i],
         data: [{{ data|join(',') }}],
         fill: false,
     })
-// console.log(values[0])
+
     i++;
     {% endfor %}
-    var configEverydayDeaths = {
-        type: 'line',
+    console.log(values)
+    var configEverydayConfirmed = {
+        type: 'bar',
         data: {
             labels: days,
             datasets: values,
@@ -29,7 +30,7 @@
             responsive: true,
             title: {
                 display: true,
-                text: 'Evolução covid - Mortes diárias por regiões'
+                text: 'Evolução covid - Casos confirmados  por regiões'
             },
             tooltips: {
                 mode: 'index',
@@ -44,14 +45,14 @@
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'Dias'
+                        labelString: 'Month'
                     }
                 }],
                 yAxes: [{
                     display: true,
                     scaleLabel: {
                         display: true,
-                        labelString: 'Número de Mortes'
+                        labelString: 'Value'
                     }
                 }]
             }

@@ -2,8 +2,11 @@
 
 {% block body %}
     <div class="row mr-5 ">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <canvas id="chartTimeLine"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="chartTimeLineConfirmed"></canvas>
         </div>
     </div>
     <div class="row mr-5  ">
@@ -56,6 +59,15 @@
 {% block javascripts %}
     {{  include ("index/Charts/quantityToday.html.twig") }}
     {{  include ("index/Charts/quantityEveryday.html.twig") }}
+    {{  include ("index/Charts/quantityEverydayConfirmed.html.twig") }}
+<script>
+    window.onload = function() {
+        var ctx = document.getElementById('chartTimeLine').getContext('2d');
+        window.myLine = new Chart(ctx, configEverydayDeaths);
 
+         ctx = document.getElementById('chartTimeLineConfirmed').getContext('2d');
+        window.myBar = new Chart(ctx, configEverydayConfirmed);
+    };
+</script>
 {% endblock %}
 

@@ -46,20 +46,18 @@ class IndexController extends AbstractController
         $allRegions = $this->regionRepository->findAll();
 
         $regionsTimeLine = [];
+        $regionsTimeLineConfirmed = [];
         /** @var  Region $region */
         foreach($allRegions as $region) {
             $name = $region->getName();
             $regionsTimeLine[$name] = $regionsTimeLine[$name] ?? [];
-//            array_push($regionsTimeLine[$name], [
-//                "deaths"=>$region->getQuantityDeaths(),
-//                "cases"=>$region->getQuantityConfirmed(),
-//                "name"=>$region->getName()
-//            ]);
+            $regionsTimeLineConfirmed[$name] = $regionsTimeLineConfirmed[$name] ?? [];
+
              array_push($regionsTimeLine[$name], $region->getQuantityDeaths());
+             array_push($regionsTimeLineConfirmed[$name], $region->getQuantityConfirmed());
 
         }
-//        var_dump($regionsTimeLine);
-//        die();
+
 
         $allRegionsName = array_map(fn(Region $region) =>   $region->getName(), $allRegions);
         $allDays = array_map(fn(Region $region) =>   $region->getDate()->format('d-m-Y'), $allRegions);
@@ -68,6 +66,7 @@ class IndexController extends AbstractController
             "regions"=>$regions,
             "regionsName"=>$allRegionsName,
             "regionsTimeLine"=>$regionsTimeLine,
+            "regionsTimeLineConfirmed"=>$regionsTimeLineConfirmed,
             "allDays"=>array_unique($allDays)
         ]);
     }
